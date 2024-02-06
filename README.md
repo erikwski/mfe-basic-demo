@@ -2,9 +2,10 @@
 
 This is a step-step basic demo to build a minimal micro-frontends architecture with [Angular 13](http://angular.io).
 
-The demo is based on two apps: 
-- a **mfe1** micro-app with a Todo module,
-- a main **shell** app that loads the remote Todo module from **mfe1**.
+The demo is based on two apps:
+
+-   a **mfe1** micro-app with a Todo module,
+-   a main **shell** app that loads the remote Todo module from **mfe1**.
 
 ![Apps diagram](mfe-demo-diagram.png)
 
@@ -14,7 +15,7 @@ Note: for a more advanced demo, you might check [MFE advanced demo](https://gith
 
 ## Running the demo apps
 
-Run the two apps in parallel and go to http://localhost:4200 for the shell app or http://localhost:4300 for the mfe1 app.
+Run the two apps in parallel and go to http://localhost:4200 for the shell app or https://mfe-basic-demo.vercel.app/ for the mfe1 app.
 
 ```
 ng serve shell
@@ -66,6 +67,7 @@ UPDATE projects/shell/src/main.ts (58 bytes)
 ```
 
 For the shell app, it will :
+
 1. update package.json to add @angular-architects/module-federation dependency (which provides ngx-build-plus)
 2. update angular.json to replace "@angular-devkit/build-angular:" to "ngx-build-plus:"
 3. update angular.json to assign specified ports
@@ -96,25 +98,24 @@ ng serve shell
 
 ![Webpack5](webpack5-chunk-files.png)
 
-
 # Create home components
 
 Create home component in shell and mfe1 app
 
 ```
-ng generate component home --project=shell 
-ng generate component home --project=mfe1  
+ng generate component home --project=shell
+ng generate component home --project=mfe1
 ```
 
 Add routing config in both app-routing.module.ts
 
 ```typescript
 const routes: Routes = [
-  {
-    path: '',
-    component: HomeComponent,
-    pathMatch: 'full',
-  }
+    {
+        path: "",
+        component: HomeComponent,
+        pathMatch: "full",
+    },
 ];
 ```
 
@@ -132,13 +133,13 @@ Replace default Shell and Mfe1 app.component.html
 <router-outlet></router-outlet>
 ```
 
-Run shell and check http://localhost:4200/ 
+Run shell and check http://localhost:4200/
 
 ```
 ng serve shell
 ```
 
-Run mfe1 and check http://localhost:4300/ 
+Run mfe1 and check https://mfe-basic-demo.vercel.app//
 
 ```
 ng serve mfe1
@@ -152,7 +153,7 @@ Create a Todo feature module and component.
 
 ```
 ng generate module Todo --project=mfe1
-ng generate component todo --project=mfe1  
+ng generate component todo --project=mfe1
 ```
 
 Add TodoModule to mfe1/app.module.ts
@@ -169,28 +170,28 @@ Add route and navigation in mfe1/app-routing.module.ts and mfe1/app.component.ht
 
 ```typescript
 const routes: Routes = [
-  {
-    path: '',
-    component: HomeComponent,
-    pathMatch: 'full',
-  },
-  {
-    path: 'todo',
-    component: TodoComponent
-  }
+    {
+        path: "",
+        component: HomeComponent,
+        pathMatch: "full",
+    },
+    {
+        path: "todo",
+        component: TodoComponent,
+    },
 ];
 ```
 
 ```html
 <h1>MFE1</h1>
 
-<a routerLink="/">Home</a> | 
+<a routerLink="/">Home</a> |
 <a routerLink="/todo">Todo</a>
 
 <router-outlet></router-outlet>
 ```
 
-Run mfe1 and check http://localhost:4300/ to see that "todo works!"
+Run mfe1 and check https://mfe-basic-demo.vercel.app// to see that "todo works!"
 
 ```
 ng serve mfe1
@@ -211,27 +212,25 @@ Add remote config in MFE1 ModuleFederationPlugin (`apps/mfe1/webpack.config.js`)
 Add default routing to Todo module.
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { TodoComponent } from './todo.component';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
+import { TodoComponent } from "./todo.component";
 
 @NgModule({
-  declarations: [TodoComponent],
-  imports: [
-    CommonModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: TodoComponent,
-      },
-    ]),
-  ],
-  exports: [
-    TodoComponent
-  ]
+    declarations: [TodoComponent],
+    imports: [
+        CommonModule,
+        RouterModule.forChild([
+            {
+                path: "",
+                component: TodoComponent,
+            },
+        ]),
+    ],
+    exports: [TodoComponent],
 })
-export class TodoModule { }
+export class TodoModule {}
 ```
 
 Run the app
@@ -256,7 +255,6 @@ This is linked to this webpack config option:
 
 Once solved, `mfe1RemoteEntry.js` will be only `1.6kB` and everything will be in a lazy chunk file.
 
-
 # Consume the Todo module in shell "host" app
 
 Add host config in Shell ModuleFederationPlugin (`apps/shell/webpack.config.js`)
@@ -264,7 +262,7 @@ Add host config in Shell ModuleFederationPlugin (`apps/shell/webpack.config.js`)
 ```
     // Host config
     remotes: {
-      "mfe1": "mfe1@http://localhost:4300/mfe1RemoteEntry.js",
+      "mfe1": "mfe1@https://mfe-basic-demo.vercel.app//mfe1RemoteEntry.js",
     },
 ```
 
@@ -272,18 +270,18 @@ Add new todo lazy remote route in shell app-routing.module.ts
 
 ```typescript
 const routes: Routes = [
-  {
-    path: '',
-    component: HomeComponent,
-    pathMatch: 'full',
-  },
-  {
-    path: 'todo',
-    loadChildren: () =>
-      import('mfe1/TodoModule').then((m) => {
-        return m.TodoModule;
-      }),
-  },
+    {
+        path: "",
+        component: HomeComponent,
+        pathMatch: "full",
+    },
+    {
+        path: "todo",
+        loadChildren: () =>
+            import("mfe1/TodoModule").then((m) => {
+                return m.TodoModule;
+            }),
+    },
 ];
 ```
 
@@ -292,7 +290,7 @@ And add navigation to app component
 ```html
 <h1>SHELL</h1>
 
-<a routerLink="/">Home</a> | 
+<a routerLink="/">Home</a> |
 <a routerLink="/todo">Todo</a>
 
 <router-outlet></router-outlet>
@@ -311,11 +309,12 @@ Error: projects/shell/src/app/app-routing.module.ts:15:13 - error TS2307: Cannot
 ```
 
 Create a typing definition file for mfe1 module in `apps/shell/src/mfe1.d.ts`:
-- `mfe1` comes from host config
-- `TodoModule` comes from remote config
+
+-   `mfe1` comes from host config
+-   `TodoModule` comes from remote config
 
 ```typescript
-declare module 'mfe1/TodoModule'
+declare module "mfe1/TodoModule";
 ```
 
 Note: check that you have this in `tsconfig.app.json`
@@ -332,7 +331,7 @@ Run the shell app and check http://localhost:4200/ to see that "todo works!"
 ng serve shell
 ```
 
-You might see the file load from `http://localhost:4300/mfe1RemoteEntry.js`.
+You might see the file load from `https://mfe-basic-demo.vercel.app//mfe1RemoteEntry.js`.
 
 Try to change text in mfe1 todo component `mfe1/src/app/todo/todo.component.html`
 
@@ -343,4 +342,3 @@ Try to change text in mfe1 todo component `mfe1/src/app/todo/todo.component.html
 After shell reloading, you should see the change!
 
 ![Webpack5](mfe-demo-shell.png)
-
